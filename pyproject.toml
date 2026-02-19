@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "comp0034-tutorialapp-fastapi"
+version = "0.1.0"
+description = "COMP0034 2025/26 Example based on completion of the weekly coding activities"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "sqlmodel",
+    "pytest",
+    "pandas",
+    "alembic",
+    "openpyxl"
+]
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["backend"]
+
+[pytest]
+addopts = ["-ra", "-v"]  #-ra show extra test summary (all except passed) # -v increase verbosity
+testpaths = ["tests"]
+pythonpath = ["src/backend"]
