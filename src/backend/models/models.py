@@ -118,6 +118,8 @@ class Host(SQLModel, table=True):
     __tablename__ = "host"
     id: Optional[int] = Field(default=None, primary_key=True)
     place_name: str = Field(unique=True)
+    latitude: Optional[float] = Field(default=None)
+    longitude: Optional[float] = Field(default=None)
     country_id: Optional[int] = Field(default=None, foreign_key="country.id")
 
     games: list["Games"] = Relationship(back_populates="hosts", link_model=GamesHost)
@@ -143,3 +145,29 @@ class Response(SQLModel, table=True):
     response_text: str
     is_correct: bool
     question: "Question" = Relationship(back_populates="responses")
+
+
+# Response model for the 'all data'
+class Paralympics(SQLModel):
+    country_name: str
+    event_type: str
+    year: int | None = None
+    place_name: str | None = None
+    events: int | None = None
+    sports: str | None = None
+    countries: int | None = None
+    participants_m: int | None = None
+    participants_f: int | None = None
+    countries: int | None = None
+    start_date: str | None = None
+    end_date: str | None = None
+    end_date: str | None = None
+    place_name: str | None = None
+    events: int | None = None
+    sports: int | None = None
+    countries: int | None = None
+    participants_m: int | None = None
+    participants_f: int | None = None
+    participants: int | None = None
+    latitude: float | None = None
+    longitude: float | None = None

@@ -1,8 +1,8 @@
-"""create_initial_migration
+"""1_initial_migration
 
-Revision ID: 15824da71a3b
+Revision ID: 6ddd1fd34303
 Revises: 
-Create Date: 2026-02-19 21:06:36.584191
+Create Date: 2026-02-20 08:56:49.027699
 
 """
 from typing import Sequence, Union
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 import sqlmodel
 
 # revision identifiers, used by Alembic.
-revision: str = '15824da71a3b'
+revision: str = '6ddd1fd34303'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -66,6 +66,8 @@ def upgrade() -> None:
     op.create_table('host',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('place_name', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('latitude', sa.Float(), nullable=True),
+    sa.Column('longitude', sa.Float(), nullable=True),
     sa.Column('country_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['country_id'], ['country.id'], ),
     sa.PrimaryKeyConstraint('id'),

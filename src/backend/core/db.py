@@ -10,7 +10,7 @@ from backend.models.models import *  # noqa
 sqlite_file = resources.files(data).joinpath("paralympics.db")
 sqlite_url = f"sqlite:///{sqlite_file}"
 connect_args = {"check_same_thread": False}
-engine = create_engine(sqlite_url, connect_args=connect_args)
+engine = create_engine(sqlite_url, connect_args=connect_args, echo=True)
 
 
 def init_db(session: Session) -> None:
@@ -45,6 +45,10 @@ def _normalize_games_frame(df_games):
     for col in games_int_cols:
         if col in df_games.columns:
             df_games[col] = pd.to_numeric(df_games[col], errors='coerce').astype('Int64')
+
+    for col in ['latitude', 'longitude']:
+        if col in df_games.columns:
+            df_games[col] = pd.to_numeric(df_games[col], errors='coerce')
 
     for col in df_games.columns:
         if col.lower() in ('start', 'end') or 'date' in col.lower():
@@ -114,7 +118,7 @@ def _add_hosts(engine, df_games):
     with Session(engine) as session:
         host_objs = []
         for _, row in df_games.iterrows():
-            country_name = row.get('country')
+            country_name = row.get('country_name')
             if pd.isna(country_name):
                 continue
             country_name = str(country_name).strip()
@@ -125,17 +129,10 @@ def _add_hosts(engine, df_games):
             if not country:
                 continue
 
-            host_val = row.get('host')
-            if pd.isna(host_val):
-                continue
+            h = Host(place_name=row.get('host'), country_id=country.id,
+                     latitude=row.get('latitude'), longitude=row.get('longitude'))
+            host_objs.append(h)
 
-            host_str = str(host_val)
-            host_names = [h.strip() for h in host_str.split(',') if h.strip()]
-            for host_name in host_names:
-                if not host_name:
-                    continue
-                h = Host(place_name=host_name, country_id=country.id)
-                host_objs.append(h)
         if host_objs:
             seen = set()
             unique_hosts = []
@@ -146,26 +143,6 @@ def _add_hosts(engine, df_games):
                     unique_hosts.append(h)
             session.add_all(unique_hosts)
             session.commit()
-
-        mask = df_games['country'].astype(str).str.strip() == 'UK, USA'
-        row = df_games.loc[mask].head(1)
-        country_field = row.get('country')
-        host_field = row.get('host')
-
-        if ',' in str(country_field) and ',' in str(host_field):
-            country_parts = [c.strip() for c in str(country_field).split(',') if c.strip()]
-            host_parts = [h.strip() for h in str(host_field).split(',') if h.strip()]
-            for c_name, h_name in zip(country_parts, host_parts):
-                lookup_country = replacements.get(c_name, c_name)
-                stmt = select(Country).filter(Country.country_name == lookup_country)
-                country_obj = session.exec(stmt).first()
-                if not country_obj:
-                    continue
-                host_stmt = select(Host).filter(Host.place_name == h_name,
-                                                Host.country_id == country_obj.id)
-                if session.exec(host_stmt).first():
-                    continue
-                host_objs.append(Host(place_name=h_name, country_id=country_obj.id))
 
 
 def _add_games_and_links(engine, df_games):
@@ -270,7 +247,7 @@ def add_data(engine):
             engine:  SQLModel engine object
     """
 
-    data_file = resources.files(data).joinpath("paralympics_all_raw.xlsx")
+    data_file = resources.files(data).joinpath("paralympics.xlsx")
     df_games, df_teams = _load_frames(data_file)
     _normalize_games_frame(df_games)
     _add_disabilities(engine, df_games)
