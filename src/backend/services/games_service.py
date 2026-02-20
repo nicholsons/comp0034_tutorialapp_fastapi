@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional
 
 from fastapi.exceptions import HTTPException
 from sqlmodel import select
@@ -19,19 +19,34 @@ class GamesService:
             get_all(db): Retrieve all games.
             update(db, g_id, data): Update an existing games.
             delete(db, g_id): Delete a games by its ID.
+            get_chart_data(db): Retrieves all data attributes from the paralympics database needed
+            for thecharts in the front end app.
         """
 
     @staticmethod
-    def get_one(session: SessionDep, id: int) -> Games:
-        result = session.get(Games, id)
+    def get_games_by_id(session: SessionDep, game_id: int) -> Games:
+        """ Method to retrieve a game by its ID.
+        Args:
+            session: SQLModel session
+            game_id: Games.id
+
+        Returns:
+            Games: Paralympic Games object
+
+        Raises:
+            HTTPException 404 Not Found
+            """
+        result: Optional[Games] = session.get(Games, game_id)
         if not result:
-            raise HTTPException(status_code=404, detail="Games not found")
+            raise HTTPException(status_code=404, detail=f"Games with id {game_id} not found")
         return result
 
     @staticmethod
-    def get_all(session: SessionDep) -> list[Games]:
+    def get_games(session: SessionDep) -> list[Games]:
         statement = select(Games)
         result = session.exec(statement).all()
+        if not result:
+            return []
         return list(result)
 
     @staticmethod
@@ -61,7 +76,8 @@ class GamesService:
                 Host.longitude,
             ).select_from(Games).join(Games.hosts).join(Country, Host.country_id == Country.id)
 
-        rows = session.exec(statement).all()
-        return rows
-        # Convert rows to dicts for consistent JSON keys
-        # return [dict(row._mapping) for row in rows]
+        result = session.exec(statement).all()
+        data = [dict(row) for row in result]
+        if not data:
+            return []
+        return data

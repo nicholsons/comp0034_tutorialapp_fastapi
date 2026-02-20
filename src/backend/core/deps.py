@@ -7,6 +7,13 @@ from backend.core.db import engine
 
 
 def get_db():
+    """ Dependency for database session
+
+    Yields:
+        session: SQLModel session
+
+    Note: you don't need to session.close() as the context manager handles this
+    """
     with Session(engine) as session:
         yield session
 
