@@ -10,7 +10,7 @@ from backend.models.models import *  # noqa
 sqlite_file = resources.files(data).joinpath("paralympics.db")
 sqlite_url = f"sqlite:///{sqlite_file}"
 connect_args = {"check_same_thread": False}
-engine = create_engine(sqlite_url, connect_args=connect_args)
+engine = create_engine(sqlite_url, connect_args=connect_args, echo=True)
 
 
 def init_db(session: Session) -> None:

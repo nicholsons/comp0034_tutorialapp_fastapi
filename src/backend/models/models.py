@@ -147,19 +147,27 @@ class Response(SQLModel, table=True):
     question: "Question" = Relationship(back_populates="responses")
 
 
-# Model for the 'all data'
+# Response model for the 'all data'
 class Paralympics(SQLModel):
     country_name: str
     event_type: str
-    year: int
-    start_date: str
-    end_date: str
-    place_name: str
-    events: int
-    sports: int
-    countries: int
-    participants_m: int
-    participants_f: int
-    participants: int
+    year: int | None = None
+    place_name: str | None = None
+    events: int | None = None
+    sports: str | None = None
+    countries: int | None = None
+    participants_m: int | None = None
+    participants_f: int | None = None
+    countries: int | None = None
+    start_date: str | None = None
+    end_date: str | None = None
+    end_date: str | None = None
+    place_name: str | None = None
+    events: int | None = None
+    sports: int | None = None
+    countries: int | None = None
+    participants_m: int | None = None
+    participants_f: int | None = None
+    participants: int | None = None
     latitude: float | None = None
     longitude: float | None = None

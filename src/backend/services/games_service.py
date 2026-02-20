@@ -35,7 +35,7 @@ class GamesService:
         return list(result)
 
     @staticmethod
-    def get_all_data(session: SessionDep) -> list[dict[str, Any]]:
+    def get_chart_data(session: SessionDep) -> list[dict[str, Any]]:
         """ Method to return all data from the paralympics database for the charts.
 
         This does not map to a single table. Needs to be preserved for the front end app.
@@ -44,8 +44,7 @@ class GamesService:
             data: json format data
         """
 
-        statement = (
-            select(
+        statement = select(
                 Country.country_name,
                 Games.event_type,
                 Games.year,
@@ -60,12 +59,7 @@ class GamesService:
                 Games.participants,
                 Host.latitude,
                 Host.longitude,
-            )
-            .select_from(Games)
-            .join(Games.hosts)  # INNER JOIN to Host via relationship
-            .join(Games.countries)  # INNER JOIN to Country via relationship
-            # .distinct()  # optional if you observe unintended duplicates
-        )
+            ).select_from(Games).join(Games.hosts).join(Country, Host.country_id == Country.id)
 
         rows = session.exec(statement).all()
         return rows
