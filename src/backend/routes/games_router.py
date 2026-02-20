@@ -5,22 +5,20 @@ from backend.models.models import Games, Paralympics
 from backend.services.games_service import GamesService
 
 router = APIRouter(
-    prefix="/api/games",
-    tags=["games"],
-    responses={404: {"description": "Not found"}}
+    # prefix="/api/games",
 )
 
 crud = GamesService()
 
 
-@router.get("/", response_model=list[Games])
+@router.get("/games", response_model=list[Games])
 def get_games(session: SessionDep):
     """ Returns the data for all Paralympics"""
     games = crud.get_games(session)
     return games
 
 
-@router.get("/chartdata/", response_model=list[Paralympics])
+@router.get("/all", response_model=list[Paralympics])
 def get_chart_data(session: SessionDep):
     """ Returns data for the charts
 
@@ -32,7 +30,7 @@ def get_chart_data(session: SessionDep):
     return data
 
 
-@router.get("/{games_id}", response_model=Games)
+@router.get("/games/{games_id}", response_model=Games)
 def get_games_by_id(session: SessionDep, games_id: int):
     """ Returns the data for one Paralympics by its id """
     games = crud.get_games_by_id(session, games_id)

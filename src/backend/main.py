@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session
 
 from backend.core.db import engine, init_db
-from backend.routes import games_router
+from backend.routes import games_router, quiz_router
 
 
 # Async lifespan even though the routes are sync—this is fine.
@@ -67,6 +67,7 @@ def create_app() -> FastAPI:
 
     # Register the routers
     app.include_router(games_router.router)
+    app.include_router(quiz_router.router)
 
     return app
 
