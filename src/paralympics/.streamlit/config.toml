@@ -1,0 +1,11 @@
+[theme]
+# base="dark"
+# primaryColor="darkSeaGreen"
+# textColor="slateBlue"
+# baseRadius="full"
+
+# Uncomment to experiment with different colours, fonts, styles etc.
+# You may need to stop and restart the app
+
+[server]
+# enableStaticServing=true

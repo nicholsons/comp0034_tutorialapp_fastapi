@@ -7,6 +7,7 @@ schemas.py
 """
 from typing import Optional
 
+from pydantic import EmailStr
 from sqlmodel import CheckConstraint, Field, Relationship, SQLModel
 
 from backend.models.schemas import CountryBase, DisabilityBase, GamesBase, HostBase, QuestionBase, \
@@ -109,3 +110,11 @@ class Response(ResponseBase, table=True):
     question_id: Optional[int] = Field(default=None, foreign_key="question.id")
 
     question: "Question" = Relationship(back_populates="responses")
+
+
+# User model added to illustrate login
+class User(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    email: EmailStr
+    hashed_password: str
+

@@ -5,12 +5,15 @@ from sqlmodel import Session, create_engine, select, text
 
 import data
 from backend.models.models import *  # noqa
+from backend.core.config import settings
 
 # Consider moving the URL to a .env file and using Settings
-sqlite_file = resources.files(data).joinpath("paralympics.db")
-sqlite_url = f"sqlite:///{sqlite_file}"
+# sqlite_file = resources.files(data).joinpath("paralympics.db")
+# sqlite_url = f"sqlite:///{sqlite_file}"
+print(settings.database_url)
+# Updated in week 8 to use settings class and .env file
 connect_args = {"check_same_thread": False}
-engine = create_engine(sqlite_url, connect_args=connect_args, echo=True)
+engine = create_engine(settings.database_url, connect_args=connect_args, echo=True)
 
 
 def init_db(session: Session) -> None:

@@ -14,7 +14,13 @@ dependencies = [
     "pytest",
     "pandas",
     "alembic",
-    "openpyxl"
+    "openpyxl",
+    "streamlit",
+    "plotly",
+    "requests",
+    "pyjwt",
+    "pydantic-settings",
+    "pwdlib[argon2,bcrypt]"
 ]
 
 [tool.setuptools]
@@ -22,9 +28,9 @@ package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["backend"]
+include = ["backend", "paralympics"]
 
 [pytest]
 addopts = ["-ra", "-v"]  #-ra show extra test summary (all except passed) # -v increase verbosity
 testpaths = ["tests"]
-pythonpath = ["src/backend"]
+pythonpath = ["src"]

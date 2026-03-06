@@ -18,7 +18,7 @@ Key points:
 """
 from typing import Optional
 
-from pydantic import ConfigDict, field_validator
+from pydantic import ConfigDict, EmailStr, Field, field_validator
 from sqlmodel import SQLModel
 
 
@@ -293,3 +293,31 @@ class ParalympicsRead(SQLModel):
     end_date: Optional[str] = None
     latitude: Optional[float] = None
     longitude: Optional[float] = None
+
+
+# Added for the auth demo only
+# Copied and adapted from: https://github.com/fastapi/full-stack-fastapi-template/blob/master/backend/app/models.py
+class UserBase(SQLModel):
+    email: EmailStr = Field(unique=True, index=True, max_length=255)
+
+
+class UserCreate(SQLModel):
+    email: EmailStr = Field(max_length=255)
+    password: str = Field(min_length=4, max_length=128)
+
+
+class UserRead(UserBase):
+    id: int
+
+
+class Token(SQLModel):
+    access_token: str
+    token_type: str = "bearer"
+
+
+class TokenPayload(SQLModel):
+    sub: Optional[str] = None
+
+
+class Message(SQLModel):
+    message: str
