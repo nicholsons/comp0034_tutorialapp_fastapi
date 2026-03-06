@@ -10,14 +10,14 @@ from backend.core.config import settings
 # Consider moving the URL to a .env file and using Settings
 # sqlite_file = resources.files(data).joinpath("paralympics.db")
 # sqlite_url = f"sqlite:///{sqlite_file}"
-print(settings.database_url)
+
 # Updated in week 8 to use settings class and .env file
 connect_args = {"check_same_thread": False}
 engine = create_engine(settings.database_url, connect_args=connect_args, echo=True)
 
 
 def init_db(session: Session) -> None:
-    """Initialize the database by creating tables and adding data if needed.
+    """Initialize the database by adding data if needed.
 
     Tables have been created with Alembic migrations
 

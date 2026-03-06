@@ -1,3 +1,7 @@
+# Adapted from
+# https://github.com/fastapi/full-stack-fastapi-template/blob/master/backend/app/api/routes/login.py
+# https://github.com/fastapi/full-stack-fastapi-template/blob/master/backend/app/api/routes/users.py
+
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException

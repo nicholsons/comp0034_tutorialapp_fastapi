@@ -36,12 +36,7 @@ class AuthService:
             # This ensures the response time is similar whether or not the email exists
             verify_password(password, self.dummy_hash)
             return None
-        verified, updated_password_hash = verify_password(password, db_user.hashed_password)
+        verified = verify_password(password, db_user.hashed_password)
         if not verified:
             return None
-        if updated_password_hash:
-            db_user.hashed_password = updated_password_hash
-            session.add(db_user)
-            session.commit()
-            session.refresh(db_user)
         return db_user

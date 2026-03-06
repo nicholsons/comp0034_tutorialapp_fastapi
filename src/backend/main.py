@@ -18,7 +18,7 @@ LOGS_DIR = Path(__file__).resolve().parent.parent.parent / "logs"
 LOGS_DIR.mkdir(exist_ok=True)
 LOG_FILE = LOGS_DIR / "paralympicsapp.log"
 
-# Configure logging at module level (runs once)
+# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',

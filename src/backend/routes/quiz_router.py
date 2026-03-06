@@ -1,7 +1,7 @@
 from fastapi import APIRouter, status
 from fastapi.exceptions import HTTPException
 
-from backend.core.deps import SessionDep
+from backend.core.deps import CurrentUser, SessionDep
 from backend.models.schemas import QuestionCreate, QuestionRead, QuestionUpdate, \
     QuestionWithResponsesRead, ResponseCreate, \
     ResponseRead, ResponseUpdate
@@ -48,18 +48,24 @@ def get_question_with_responses(session: SessionDep, q_id: int):
 
 # Route now protected by login
 @router.post("/questions", response_model=QuestionRead)
-def create_question(session: SessionDep, question_data: QuestionCreate):
+def create_question(session: SessionDep, current_user: CurrentUser, question_data: QuestionCreate):
     """ Creates a new question  """
-    new_question = crud.create_question(session, question_data)
-    return new_question
+    if current_user:
+        new_question = crud.create_question(session, question_data)
+        return new_question
+    else:
+        raise HTTPException(status_code=401, detail="You must have an account and be logged in.")
 
 
 # Route now protected by login
 @router.post("/responses", response_model=ResponseRead)
-def create_response(session: SessionDep, create_data: ResponseCreate):
+def create_response(session: SessionDep, current_user: CurrentUser, create_data: ResponseCreate):
     """ Creates a new response to a question  """
-    new_question = crud.create_response(session, create_data)
-    return new_question
+    if current_user:
+        new_question = crud.create_response(session, create_data)
+        return new_question
+    else:
+        raise HTTPException(status_code=401, detail="You must have an account and be logged in.")
 
 
 @router.delete("/responses/{response_id}", status_code=status.HTTP_204_NO_CONTENT)

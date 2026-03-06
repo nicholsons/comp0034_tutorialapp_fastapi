@@ -3,7 +3,6 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import jwt
-from jwt.exceptions import InvalidTokenError
 from pwdlib import PasswordHash
 from pwdlib.hashers.argon2 import Argon2Hasher
 from pwdlib.hashers.bcrypt import BcryptHasher
@@ -39,13 +38,3 @@ def verify_password(plain_password: str, hashed_password: str) -> tuple[bool, st
 
 def get_password_hash(password: str) -> str:
     return password_hash.hash(password)
-
-
-def verify_password_reset_token(token: str) -> str | None:
-    try:
-        decoded_token = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=[settings.algorithm]
-        )
-        return str(decoded_token["sub"])
-    except InvalidTokenError:
-        return None

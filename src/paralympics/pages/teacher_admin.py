@@ -86,7 +86,7 @@ def process_form() -> None:
 
         for idx, r in enumerate(responses, start=1):
             r["question_id"] = question_id
-            resp = requests.post(f"{API_BASE}/responses", json=r)
+            resp = requests.post(f"{API_BASE}/responses", json=r, headers=headers)
             resp.raise_for_status()
         st.success("Question saved successfully.")
 
