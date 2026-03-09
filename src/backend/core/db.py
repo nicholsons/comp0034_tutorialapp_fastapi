@@ -1,6 +1,11 @@
+from __future__ import annotations
+
+import pathlib
 from importlib import resources
+from typing import Any
 
 import pandas as pd
+import sqlalchemy
 from sqlmodel import Session, create_engine, select, text
 
 import data
@@ -21,10 +26,9 @@ def init_db(session: Session) -> None:
 
     Tables have been created with Alembic migrations
 
-        Args:
+    Args:
             session
     """
-
     #  If you don't want to use alembic migrations,  un-comment the next lines to create the tables
     # from sqlmodel import SQLModel
     # SQLModel.metadata.create_all(engine)
@@ -36,13 +40,13 @@ def init_db(session: Session) -> None:
             add_data(engine)
 
 
-def _load_frames(data_file):
+def _load_frames(data_file: pathlib.Path | str) -> type[pd.DataFrame, pd.DataFrame]:
     df_games = pd.read_excel(data_file, sheet_name="games", keep_default_na=True)
     df_teams = pd.read_excel(data_file, sheet_name="team_codes", keep_default_na=True)
     return df_games, df_teams
 
 
-def _normalize_games_frame(df_games):
+def _normalize_games_frame(df_games: pd.DataFrame) -> None:
     games_int_cols = ['year', 'participants_m', 'participants_f', 'participants', 'events',
                       'sports', 'countries']
     for col in games_int_cols:
@@ -58,7 +62,7 @@ def _normalize_games_frame(df_games):
             df_games[col] = pd.to_datetime(df_games[col], errors='coerce').dt.strftime('%d-%m-%Y')
 
 
-def _add_disabilities(engine, df_games):
+def _add_disabilities(engine: sqlalchemy.Engine, df_games: pd.DataFrame) -> None:
     df_disability = (
         df_games['disabilities_included']
         .dropna()
@@ -75,7 +79,7 @@ def _add_disabilities(engine, df_games):
         session.commit()
 
 
-def _add_countries_and_teams(engine, df_teams):
+def _add_countries_and_teams(engine: sqlalchemy.Engine, df_teams: pd.DataFrame) -> None:
     for _, row in df_teams.iterrows():
         code = str(row.get('Code')).upper()
         member_type = str(row.get('MemberType', '')).strip().lower()
@@ -109,7 +113,7 @@ def _add_countries_and_teams(engine, df_teams):
             session.commit()
 
 
-def _add_hosts(engine, df_games):
+def _add_hosts(engine: sqlalchemy.Engine, df_games: pd.DataFrame) -> None:
     replacements = {
         "USA": "United States of America",
         "UK": "Great Britain",
@@ -148,7 +152,7 @@ def _add_hosts(engine, df_games):
             session.commit()
 
 
-def _add_games_and_links(engine, df_games):
+def _add_games_and_links(engine: sqlalchemy.Engine, df_games: pd.DataFrame) -> None:
     with Session(engine) as session:
         for _, row in df_games.iterrows():
             def san(v):
@@ -243,13 +247,12 @@ def _run_sql_file(engine, filename):
 def add_data(engine):
     """Add data to the database from Excel file and SQL files.
 
-        Loads paralympics data from an Excel file, processes it, and populates
-        the database tables.
+    Loads paralympics data from an Excel file, processes it, and populates
+    the database tables.
 
-        Args:
-            engine:  SQLModel engine object
+    Args:
+        engine:  SQLModel engine object
     """
-
     data_file = resources.files(data).joinpath("paralympics.xlsx")
     df_games, df_teams = _load_frames(data_file)
     _normalize_games_frame(df_games)
