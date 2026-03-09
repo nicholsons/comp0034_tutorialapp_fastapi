@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools", "setuptools-scm"]
+requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -20,7 +20,12 @@ dependencies = [
     "requests",
     "pyjwt",
     "pydantic-settings",
-    "pwdlib[argon2,bcrypt]"
+    "pwdlib[argon2,bcrypt]",
+    "httpx",
+    "ruff",
+    "pytest-cov",
+    "faker",
+    "pytest-playwright"
 ]
 
 [tool.setuptools]
@@ -30,7 +35,57 @@ package-dir = { "" = "src" }
 where = ["src"]
 include = ["backend", "paralympics"]
 
-[pytest]
-addopts = ["-ra", "-v"]  #-ra show extra test summary (all except passed) # -v increase verbosity
-testpaths = ["tests"]
-pythonpath = ["src"]
+[tool.pytest]
+addopts = [
+    "-ra", # -ra show extra test summary (all except passed)
+    "-v", # -v increase verbosity
+    "--import-mode=importlib", # import-mode is recommended in the pytest documentation
+    "--cov=src", # coverage should consider all Python files in the src directory
+    "--cov-report=term-missing", # report coverage in the terminal showing which lines are not covered by tests
+    "--cov-report=html", # generate an html coverage report
+    "--ignore=tests/frontend/test_teacher_admin.py", # skip teacher admin frontend test file, needs to be modified to handle the login
+    "--deselect=tests/frontend/test_paralympics_playwright.py::test_new_question_submitted"  # skips just the specified test, not the whole file
+]
+testpaths = ["tests"]  # test path location
+
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
+omit = [
+    "src/**/__init__.py",
+]
+
+[tool.coverage.html]
+directory = "tests/htmlcov"
+
+
+[tool.ruff]
+line-length = 100
+indent-width = 4
+target-version = "py311"
+
+# https://docs.astral.sh/ruff/rules/
+[tool.ruff.lint]
+select = [
+    "E4",
+    "E7",
+    "E9",
+    "F",
+    "ANN",
+    "A",
+    "FAST",
+    "PT",
+    "N",
+    "D",
+    "PLR"]
+ignore = ["D417"]
+future-annotations = true  # Enable `from __future__ import annotations` imports
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+# docstring-code-format = true
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"

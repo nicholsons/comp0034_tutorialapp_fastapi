@@ -1,4 +1,4 @@
-""" Model classes for the paralympics database
+"""Model classes for the paralympics database
 
 From COMP0035 and used in COMP0034 week 6 activities
 

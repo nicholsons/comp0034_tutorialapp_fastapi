@@ -3,7 +3,7 @@ from pathlib import Path
 
 from streamlit.testing.v1 import AppTest
 
-APP_FILE = Path(__file__).parent.parent.joinpath("src", "paralympics", "paralympics_dashboard.py")
+APP_FILE = Path(__file__).parent.parent.parent.joinpath("src", "paralympics", "paralympics_dashboard.py")
 
 def test_questions_header():
     """

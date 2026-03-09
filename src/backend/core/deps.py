@@ -14,7 +14,7 @@ from backend.models.schemas import TokenPayload
 
 
 def get_db():
-    """ Dependency for database session
+    """Dependency for database session
 
     Yields:
         session: SQLModel session
@@ -39,18 +39,18 @@ TokenDep = Annotated[str, Depends(reusable_oauth2)]
 
 
 def get_current_user(session: SessionDep, token: TokenDep) -> User:
-    """ Get the current authenticated user from JWT token.
+    """Get the current authenticated user from JWT token.
 
-        Args:
-            session: Database session dependency
-            token: Dependency, JWT token from OAuth2 authentication
+    Args:
+        session: Database session dependency
+        token: Dependency, JWT token from OAuth2 authentication
 
-        Returns:
-            User: The authenticated user object
+    Returns:
+        User: The authenticated user object
 
-        Raises:
-            HTTPException: If token is invalid (403) or user not found (404)
-        """
+    Raises:
+        HTTPException: If token is invalid (403) or user not found (404)
+    """
     try:
         payload = jwt.decode(
             token,

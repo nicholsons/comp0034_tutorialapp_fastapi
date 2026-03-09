@@ -59,14 +59,13 @@ async def lifespan(app: FastAPI):
 def create_app() -> FastAPI:
     """Create and configure the FastAPI application.
 
-        Sets up the FastAPI application with CORS middleware and API routes.
-        Configures allowed origins for cross-origin requests and registers
-        the routers.
+    Sets up the FastAPI application with CORS middleware and API routes.
+    Configures allowed origins for cross-origin requests and registers
+    the routers.
 
-        Returns:
-            FastAPI:  FastAPI application instance.
+    Returns:
+        FastAPI:  FastAPI application instance.
     """
-
     app = FastAPI(
         title="Paralympics API",
         lifespan=lifespan,

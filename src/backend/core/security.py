@@ -18,10 +18,10 @@ password_hash = PasswordHash(
 
 
 def create_access_token(subject: str | Any) -> str:
-    """ Create access token
+    """Create access token
 
     Args:
-    subject: Identifier for the token subject \(for example, a user ID\).
+    subject: Identifier for the token subject (for example, a user ID).
 
     Returns:
        Encoded JWT access token.
