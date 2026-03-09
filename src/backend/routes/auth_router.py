@@ -4,7 +4,7 @@
 
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from backend.core import security
@@ -44,7 +44,7 @@ def test_token(current_user: CurrentUser) -> Any:
     return current_user
 
 
-@router.post("/signup", response_model=UserRead)
+@router.post("/signup", response_model=UserRead, status_code=status.HTTP_201_CREATED)
 def register_user(session: SessionDep, user_in: UserCreate) -> Any:
     """
     Create new user without the need to be logged in.
