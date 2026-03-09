@@ -23,6 +23,8 @@ jobs:
       DB_DRIVER: ${{ secrets.DB_DRIVER }}
       ALGORITHM: ${{ secrets.ALGORITHM }}
       ACCESS_TOKEN_EXPIRES: ${{ secrets.ACCESS_TOKEN_EXPIRES }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
     steps:
     - uses: actions/checkout@v6
@@ -37,11 +39,12 @@ jobs:
     - name: Create .env file for testing
       run: |
         cat > .env << EOF
-        DB_DRIVER=sqlite:///
-        DB_NAME=paralympics.db
-        TEST_DB=test_paralympics.db
-        ALGORITHM=HS256
-        ACCESS_TOKEN_EXPIRES=30
+        DB_DRIVER=${{ env.DB_DRIVER }}
+        DB_NAME=${{ env.DB_NAME }}
+        TEST_DB=${{ env.TEST_DB }}
+        ALGORITHM=${{ env.ALGORITHM }}
+        ACCESS_TOKEN_EXPIRES=${{ env.ACCESS_TOKEN_EXPIRES }}
+        SECRET_KEY=${{ env.SECRET_KEY }}
         EOF
     - name: Test with pytest
       run: |
