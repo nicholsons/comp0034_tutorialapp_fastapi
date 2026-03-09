@@ -4,7 +4,7 @@
 
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
 from backend.core import security
@@ -21,8 +21,7 @@ crud = AuthService()
 def login_access_token(
         session: SessionDep, form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
 ) -> Token:
-    """
-    OAuth2 compatible token login, get an access token for future requests
+    """OAuth2 compatible token login, get an access token for future requests
     """
     # Use email as the username and the password to log them in and return the user
     user = crud.authenticate(
@@ -38,16 +37,14 @@ def login_access_token(
 
 @router.post("/login/test-token", response_model=UserRead)
 def test_token(current_user: CurrentUser) -> Any:
-    """
-    Test access token
+    """Test access token
     """
     return current_user
 
 
-@router.post("/signup", response_model=UserRead)
+@router.post("/signup", response_model=UserRead, status_code=status.HTTP_201_CREATED)
 def register_user(session: SessionDep, user_in: UserCreate) -> Any:
-    """
-    Create new user without the need to be logged in.
+    """Create new user without the need to be logged in.
     """
     user = crud.get_user_by_email(session=session, email=user_in.email)
     if user:

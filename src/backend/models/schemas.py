@@ -1,4 +1,4 @@
-""" Schemas for the paralympics app
+"""Schemas for the paralympics app
 
 This module contains:
 - Base classes defining core fields
@@ -298,7 +298,7 @@ class ParalympicsRead(SQLModel):
 # Added for the auth demo only
 # Copied and adapted from: https://github.com/fastapi/full-stack-fastapi-template/blob/master/backend/app/models.py
 class UserBase(SQLModel):
-    email: EmailStr = Field(unique=True, index=True, max_length=255)
+    email: EmailStr = Field(index=True, max_length=255)
 
 
 class UserCreate(SQLModel):

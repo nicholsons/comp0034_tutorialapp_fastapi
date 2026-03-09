@@ -14,7 +14,7 @@ crud = QuizService()
 
 @router.get("/questions", response_model=list[QuestionRead])
 def get_questions(session: SessionDep):
-    """ Returns the data for all questions
+    """Returns the data for all questions
 
     NB: Front-end route needs to be changed from '/question' to '/questions'
     """
@@ -24,7 +24,7 @@ def get_questions(session: SessionDep):
 
 @router.get("/questions/{q_id}", response_model=QuestionRead)
 def get_question(session: SessionDep, q_id: int):
-    """ Returns the data for one questions
+    """Returns the data for one questions
 
     NB: Front-end route needs to be changed from '/question/q_id' to '/questions/{q_id}'
     """
@@ -34,22 +34,22 @@ def get_question(session: SessionDep, q_id: int):
 
 @router.get("/response/search", response_model=list[ResponseRead])
 def get_responses_for_question(session: SessionDep, question_id: int):
-    """ Returns the data for all responses for a given question"""
+    """Returns the data for all responses for a given question"""
     responses = crud.get_responses_by_question(session, question_id)
     return responses
 
 
 @router.get("/questions/{q_id}/responses", response_model=QuestionWithResponsesRead)
 def get_question_with_responses(session: SessionDep, q_id: int):
-    """ Returns a question and its responses """
+    """Returns a question and its responses"""
     question = crud.get_question(session, q_id)
     return question
 
 
-# Route now protected by login
-@router.post("/questions", response_model=QuestionRead)
+# Route requires login (authorisation)
+@router.post("/questions", response_model=QuestionRead, status_code=status.HTTP_201_CREATED)
 def create_question(session: SessionDep, current_user: CurrentUser, question_data: QuestionCreate):
-    """ Creates a new question  """
+    """Creates a new question"""
     if current_user:
         new_question = crud.create_question(session, question_data)
         return new_question
@@ -57,10 +57,10 @@ def create_question(session: SessionDep, current_user: CurrentUser, question_dat
         raise HTTPException(status_code=401, detail="You must have an account and be logged in.")
 
 
-# Route now protected by login
-@router.post("/responses", response_model=ResponseRead)
+# Route requires login (authorisation)
+@router.post("/responses", response_model=ResponseRead, status_code=status.HTTP_201_CREATED)
 def create_response(session: SessionDep, current_user: CurrentUser, create_data: ResponseCreate):
-    """ Creates a new response to a question  """
+    """Creates a new response to a question"""
     if current_user:
         new_question = crud.create_response(session, create_data)
         return new_question
@@ -70,7 +70,7 @@ def create_response(session: SessionDep, current_user: CurrentUser, create_data:
 
 @router.delete("/responses/{response_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_response(session: SessionDep, response_id: int):
-    """ Delete a Response
+    """Delete a Response
 
     The version returns 404 if the Response was not found and 204 if it was deleted
     You could modify and return 204 in both cases
@@ -87,7 +87,7 @@ def delete_response(session: SessionDep, response_id: int):
 
 @router.delete("/questions/{question_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_question(session: SessionDep, question_id: int):
-    """ Delete a Question
+    """Delete a Question
 
     The version returns 404 if the Question was not found and 204 if it was deleted
     You could modify and return 204 in both cases
@@ -104,7 +104,7 @@ def delete_question(session: SessionDep, question_id: int):
 
 @router.put("/questions/{question_id}")
 def replace_question(question_id: int, data: QuestionCreate, session: SessionDep):
-    """ Updates a Question by replacing the entire resource
+    """Updates a Question by replacing the entire resource
 
     Note: model_dump() expects all fields to be present in the data and applies the validation
     """
@@ -114,7 +114,7 @@ def replace_question(question_id: int, data: QuestionCreate, session: SessionDep
 
 @router.patch("/questions/{question_id}")
 def update_question(question_id: int, data: QuestionUpdate, session: SessionDep):
-    """ Partial updates for a Question
+    """Partial updates for a Question
 
     Note: data.model_dump(exclude_unset=True) allows for only some fields to be present in the data
     """
@@ -125,7 +125,7 @@ def update_question(question_id: int, data: QuestionUpdate, session: SessionDep)
 
 @router.put("/responses/{response_id}")
 def update_response(response_id: int, data: ResponseCreate, session: SessionDep):
-    """ Updates a Response by replacing the entire resource
+    """Updates a Response by replacing the entire resource
 
     Note: model_dump() expects all fields to be present in the data and applies the validation
     """
@@ -135,7 +135,7 @@ def update_response(response_id: int, data: ResponseCreate, session: SessionDep)
 
 @router.patch("/responses/{response_id}")
 def replace_response(response_id: int, data: ResponseUpdate, session: SessionDep):
-    """ Partial updates for a Response
+    """Partial updates for a Response
 
     Note: data.model_dump(exclude_unset=True) allows for only some fields to be present in the data
     """

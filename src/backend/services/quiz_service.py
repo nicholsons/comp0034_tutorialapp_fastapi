@@ -11,17 +11,18 @@ from backend.models.schemas import QuestionCreate, ResponseCreate
 class QuizService:
     """CRUD operations for the Quiz feature
 
-        Methods:
-            get_question(db, g_id): Retrieve a question by its ID.
-            get_questions(db): Retrieve all questions.
-            get_responses_by_question(db, q_id): Retrieve all responses for a question.
-            TBC create_question(db, data): Create a new question.
-            TBC create_response(db, data): Create a new response.
-        """
+    Methods:
+        get_question(db, g_id): Retrieve a question by its ID.
+        get_questions(db): Retrieve all questions.
+        get_responses_by_question(db, q_id): Retrieve all responses for a question.
+        TBC create_question(db, data): Create a new question.
+        TBC create_response(db, data): Create a new response.
+    """
 
     @staticmethod
     def get_question(session: SessionDep, q_id: int) -> Question:
-        """ Method to retrieve a question by its ID.
+        """Method to retrieve a question by its ID.
+
         Args:
             session: SQLModel session
             q_id: Question.id
@@ -31,7 +32,7 @@ class QuizService:
 
         Raises:
             HTTPException 404 Not Found
-            """
+        """
         result: Optional[Question] = session.get(Question, q_id)
         if not result:
             raise HTTPException(status_code=404, detail=f"Question with id {q_id} not found")
@@ -39,7 +40,8 @@ class QuizService:
 
     @staticmethod
     def get_response(session: SessionDep, r_id: int) -> Response:
-        """ Method to retrieve a repsonse by its ID.
+        """Method to retrieve a repsonse by its ID.
+
         Args:
             session: SQLModel session
             r_id: Response.id
@@ -49,7 +51,7 @@ class QuizService:
 
         Raises:
             HTTPException 404 Not Found
-            """
+        """
         result: Optional[Question] = session.get(Response, r_id)
         if not result:
             raise HTTPException(status_code=404, detail=f"Response with id {r_id} not found")
@@ -57,6 +59,7 @@ class QuizService:
 
     @staticmethod
     def get_questions(session: SessionDep) -> list[Question]:
+        """Method to retrieve all questions."""
         statement = select(Question)
         result = session.exec(statement).all()
         if not result:
@@ -65,6 +68,7 @@ class QuizService:
 
     @staticmethod
     def get_responses_by_question(session: SessionDep, q_id: int) -> list[Response]:
+        """Method to retrieve all responses for a question."""
         statement = select(Response).where(Response.question_id == q_id)
         result = session.exec(statement).all()
         if not result:
@@ -74,7 +78,7 @@ class QuizService:
 
     @staticmethod
     def create_question(db: SessionDep, question_create: QuestionCreate) -> Question:
-        """ Method to create a new Question.
+        """Method to create a new Question.
 
         Args:
             db: SQLModel session
@@ -82,7 +86,7 @@ class QuizService:
 
         Returns:
             Question: Question object
-            """
+        """
         new_q = Question.model_validate(question_create)
         db.add(new_q)
         db.commit()
@@ -91,7 +95,7 @@ class QuizService:
 
     @staticmethod
     def create_response(db: SessionDep, response_create: ResponseCreate) -> Response:
-        """ Method to create a new response.
+        """Method to create a new response.
 
         Args:
             db: SQLModel session
@@ -107,7 +111,7 @@ class QuizService:
         return new_r
 
     def delete_question(self, session: SessionDep, q_id: int) -> Any:
-        """ Delete a Question by its ID.
+        """Delete a Question by its ID.
 
         Args:
             session: FastAPI dependency with SQLModel session
@@ -115,7 +119,7 @@ class QuizService:
 
         Returns:
             {} if the Question is deleted, or None if not found
-            """
+        """
         q = self.get_question(session, q_id)
         if not q:
             return None
@@ -125,7 +129,7 @@ class QuizService:
             return {}
 
     def delete_response(self, session: SessionDep, response_id: int) -> Any:
-        """ Delete a Response by its ID.
+        """Delete a Response by its ID.
 
         Args:
             session: FastAPI dependency with SQLModel session
@@ -133,7 +137,7 @@ class QuizService:
 
         Returns:
             {} if the response is deleted, or None if not found
-            """
+        """
         r = self.get_response(session, response_id)
         if not r:
             return None
@@ -143,7 +147,7 @@ class QuizService:
             return {}
 
     def update_question(self, session: SessionDep, q_id: int, update_data: dict):
-        """ Method to update a Question object.
+        """Method to update a Question object.
 
         This method can be used by either PUT or PATCH. The route code will handle the
         validation against the schema.
@@ -155,7 +159,7 @@ class QuizService:
 
         Returns:
             q: Question object
-            """
+        """
         q = self.get_question(session, q_id)
         if q is None:
             return None
@@ -168,7 +172,7 @@ class QuizService:
         return q
 
     def update_response(self, session: SessionDep, r_id: int, update_data: dict):
-        """ Method to update a Response object.
+        """Method to update a Response object.
 
         This method can be used by either PUT or PATCH. The route code will handle the
         validation against the schema.
@@ -180,7 +184,7 @@ class QuizService:
 
         Returns:
             r: Response object
-            """
+        """
         r = self.get_response(session, r_id)
         if r is None:
             return None
