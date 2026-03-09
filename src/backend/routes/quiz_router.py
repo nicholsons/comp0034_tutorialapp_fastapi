@@ -47,7 +47,7 @@ def get_question_with_responses(session: SessionDep, q_id: int):
 
 
 # Route now protected by login
-@router.post("/questions", response_model=QuestionRead)
+@router.post("/questions", response_model=QuestionRead, status_code=status.HTTP_201_CREATED)
 def create_question(session: SessionDep, current_user: CurrentUser, question_data: QuestionCreate):
     """ Creates a new question  """
     if current_user:
@@ -58,7 +58,7 @@ def create_question(session: SessionDep, current_user: CurrentUser, question_dat
 
 
 # Route now protected by login
-@router.post("/responses", response_model=ResponseRead)
+@router.post("/responses", response_model=ResponseRead, status_code=status.HTTP_201_CREATED)
 def create_response(session: SessionDep, current_user: CurrentUser, create_data: ResponseCreate):
     """ Creates a new response to a question  """
     if current_user:
