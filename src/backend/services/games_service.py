@@ -44,6 +44,7 @@ class GamesService:
             raise HTTPException(status_code=404, detail=f"Games with id {games_id} not found")
         return result
 
+    @staticmethod
     def get_games(session: SessionDep) -> list[Games]:
         """Method to retrieve all games."""
         statement = select(Games)
