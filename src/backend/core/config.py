@@ -15,6 +15,7 @@ class SettingsBase(BaseSettings):
     """ Settings class with values for all environments"""
     db_name: str
     db_driver: str
+    secret_key: str
     algorithm: str
     access_token_expires: int
 
@@ -43,12 +44,17 @@ class SettingsTest(SettingsBase):
 
 
 @lru_cache()
-def get_settings():
-    env = os.getenv("ENV", "development")
-    config_cls_dict = {"development": SettingsDevelopment,
-                       "testing": SettingsTest}
-    config_cls = config_cls_dict[env]
-    return config_cls()
+def get_settings() -> BaseSettings:
+    """Return settings class from environment with a development fallback.
 
-# Removed so that get_settings() is called for either development or testing
-# settings = get_settings()
+    @lru_cache() caches the settings so it is only created once per process.
+    """
+    env = (os.getenv("ENV") or os.getenv("ENVIRONMENT") or "development").lower()
+    mapping = {
+        "development": SettingsDevelopment,
+        "dev": SettingsDevelopment,
+        "testing": SettingsTest,
+        "test": SettingsTest,
+    }
+    # mapping.get(env, SettingsDevelopment) returns a class, the final () instantiates that class.
+    return mapping.get(env, SettingsDevelopment)()

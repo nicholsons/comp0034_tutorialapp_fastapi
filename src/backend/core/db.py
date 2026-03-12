@@ -20,7 +20,11 @@ from backend.models.models import *  # noqa
 def get_engine() -> sqlalchemy.engine.base.Engine:
     settings = get_settings()
     connect_args = {"check_same_thread": False}
-    engine = create_engine(settings.database_url, connect_args=connect_args, echo=True)
+    engine = create_engine(
+        settings.database_url,
+        connect_args=connect_args,
+        # echo=True
+    )
     return engine
 
 
