@@ -6,11 +6,11 @@ from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from sqlmodel import Session
 
-from backend.core.db import engine, init_db
+from backend.core.db import get_engine, init_db
 from backend.routes import auth_router, games_router, quiz_router
 
 # Create logs directory if it doesn't exist
@@ -45,6 +45,7 @@ async def lifespan(app: FastAPI):
         None:
     """
     # Startup: creates the database
+    engine = get_engine()
     with Session(engine) as session:
         logger.info("Initializing database...")
         init_db(session)
@@ -60,8 +61,6 @@ def create_app() -> FastAPI:
     """Create and configure the FastAPI application.
 
     Sets up the FastAPI application with CORS middleware and API routes.
-    Configures allowed origins for cross-origin requests and registers
-    the routers.
 
     Returns:
         FastAPI:  FastAPI application instance.
@@ -105,6 +104,8 @@ def create_app() -> FastAPI:
     app.include_router(auth_router.router)
 
     return app
+
+
 app = create_app()
 
 if __name__ == "__main__":

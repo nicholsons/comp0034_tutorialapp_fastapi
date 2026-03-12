@@ -298,7 +298,12 @@ class ParalympicsRead(SQLModel):
 # Added for the auth demo only
 # Copied and adapted from: https://github.com/fastapi/full-stack-fastapi-template/blob/master/backend/app/models.py
 class UserBase(SQLModel):
-    email: EmailStr = Field(index=True, max_length=255)
+    # email: EmailStr = Field(index=True, max_length=255)  # deprecated
+
+    email: EmailStr = Field(
+        max_length=255,
+        json_schema_extra={"index": True}
+    )
 
 
 class UserCreate(SQLModel):

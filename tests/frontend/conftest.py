@@ -10,13 +10,14 @@ from urllib.request import urlopen
 import pytest
 import sqlalchemy as sa
 import uvicorn
-from sqlalchemy import StaticPool, create_engine
-from sqlmodel import Session
+from sqlmodel import Session, select, SQLModel, StaticPool, create_engine
 from streamlit.testing.v1 import AppTest
 
-from backend.core.config import settings
+from backend.core.config import get_settings
+from backend.core.db import add_data
 from backend.core.deps import get_db
-from backend.main import app
+from backend.main import create_app
+from backend.models.models import Games
 
 
 def wait_for_http(url, timeout=10, process=None):
@@ -34,24 +35,28 @@ def wait_for_http(url, timeout=10, process=None):
 
 
 @pytest.fixture(name="api_session", scope="session")
-def api_session_fixture():
+def api_session_fixture(set_test_env):
     """ Creates a test database dependency once for the test session.
 
     Rolls back all transactions at the end of all tests.
 
     From https://github.com/fastapi/sqlmodel/discussions/940
-
-    Note: the test_paralympics.db contains data, if you create an in memory database you will also
-    need to seed some sample data for testing.
     """
+    settings = get_settings()
     engine = create_engine(
-        settings.test_database_url,
+        settings.database_url,
         connect_args={"check_same_thread": False},
         poolclass=StaticPool,
         echo=True
         # echo=True Added so you can see what is happening when you run tests that use the database
         # you may prefer to set this to False
     )
+    SQLModel.metadata.create_all(bind=engine)
+    # Add data if empty
+    with Session(engine) as session:
+        games = session.exec(select(Games)).first()
+        if not games:
+            add_data(engine)
     connection = engine.connect()
     transaction = connection.begin()
     session = Session(bind=connection)
@@ -78,6 +83,7 @@ def api_server(api_session: Session):
     def get_session_override():
         return api_session
 
+    app = create_app()
     app.dependency_overrides[get_db] = get_session_override
 
     thread = threading.Thread(

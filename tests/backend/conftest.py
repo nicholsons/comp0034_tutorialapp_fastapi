@@ -1,16 +1,17 @@
 import pytest
 import sqlalchemy as sa
 from fastapi.testclient import TestClient
-from sqlmodel import Session, SQLModel, create_engine, StaticPool
+from sqlmodel import SQLModel, Session, StaticPool, create_engine, select
 
-from backend.core.config import settings
+from backend.core.config import get_settings
+from backend.core.db import add_data
 from backend.core.deps import get_current_user, get_db
-from backend.main import app
-from backend.models.models import User
+from backend.main import create_app
+from backend.models.models import User, Games
 
 
 @pytest.fixture(name="session")
-def session_fixture():
+def session_fixture(set_test_env):
     """ Creates a test database dependency.
 
     Rolls back all transactions after each test.
@@ -20,8 +21,9 @@ def session_fixture():
     Note: the test_paralympics.db contains data, if you create an in memory database you will also
     need to seed some sample data for testing.
     """
+    settings = get_settings()
     engine = create_engine(
-        settings.test_database_url,
+        settings.database_url,
         connect_args={"check_same_thread": False},
         poolclass=StaticPool,
         echo=True
@@ -29,6 +31,11 @@ def session_fixture():
         # you may prefer to set this to False
     )
     SQLModel.metadata.create_all(bind=engine)
+    # Add data if empty
+    with Session(engine) as session:
+        games = session.exec(select(Games)).first()
+        if not games:
+            add_data(engine)
     connection = engine.connect()
     transaction = connection.begin()
     session = Session(bind=connection)
@@ -57,6 +64,7 @@ def client_fixture(session: Session):
     def get_session_override():
         return session
 
+    app = create_app()
     app.dependency_overrides[get_db] = get_session_override
 
     client = TestClient(app)
@@ -89,6 +97,7 @@ def client_with_auth_fixture(session: Session, test_user: User):
     def get_current_user_override():
         return test_user
 
+    app = create_app()
     app.dependency_overrides[get_db] = get_session_override
     app.dependency_overrides[get_current_user] = get_current_user_override
 

@@ -7,7 +7,7 @@ from pwdlib import PasswordHash
 from pwdlib.hashers.argon2 import Argon2Hasher
 from pwdlib.hashers.bcrypt import BcryptHasher
 
-from backend.core.config import settings
+from backend.core.config import get_settings
 
 password_hash = PasswordHash(
     (
@@ -26,6 +26,7 @@ def create_access_token(subject: str | Any) -> str:
     Returns:
        Encoded JWT access token.
     """
+    settings = get_settings()
     expire = datetime.now(timezone.utc) + timedelta(minutes=settings.access_token_expires)
     to_encode = {"exp": expire, "sub": str(subject)}
     encoded_jwt = jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)

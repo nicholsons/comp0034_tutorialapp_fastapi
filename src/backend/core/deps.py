@@ -7,8 +7,8 @@ from jwt.exceptions import InvalidTokenError
 from pydantic import ValidationError
 from sqlmodel import Session
 
-from backend.core.config import settings
-from backend.core.db import engine
+from backend.core.config import get_settings
+from backend.core.db import get_engine
 from backend.models.models import User
 from backend.models.schemas import TokenPayload
 
@@ -21,6 +21,7 @@ def get_db():
 
     Note: you don't need to session.close() as the context manager handles this
     """
+    engine = get_engine()
     with Session(engine) as session:
         yield session
 
@@ -51,6 +52,7 @@ def get_current_user(session: SessionDep, token: TokenDep) -> User:
     Raises:
         HTTPException: If token is invalid (403) or user not found (404)
     """
+    settings = get_settings()
     try:
         payload = jwt.decode(
             token,

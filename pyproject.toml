@@ -39,6 +39,7 @@ include = ["backend", "paralympics"]
 addopts = [
     "-ra", # -ra show extra test summary (all except passed)
     "-v", # -v increase verbosity
+    "-s",  # prints output during test run
     "--import-mode=importlib", # import-mode is recommended in the pytest documentation
     "--cov=src", # coverage should consider all Python files in the src directory
     "--cov-report=term-missing", # report coverage in the terminal showing which lines are not covered by tests
