@@ -26,7 +26,7 @@ def login(email, password):
 def signup(email, password):
     data = {"email": email, "password": password}
     resp = requests.post(f"{API_BASE}/signup", json=data)
-    if resp.status_code == 200:
+    if resp.status_code == 201:
         return "Account created. You can now log in."
     return f"Account could not be created. {resp.json()['detail']}"
 
