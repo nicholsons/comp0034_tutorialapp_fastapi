@@ -36,7 +36,8 @@ class AuthService:
             # This ensures the response time is similar whether or not the email exists
             verify_password(password, self.dummy_hash)
             return None
-        verified = verify_password(password, db_user.hashed_password)
-        if not verified:
+        # verify_password returns: (is_valid: bool, updated_hash: str | None)
+        is_valid, updated_hash = verify_password(password, db_user.hashed_password)
+        if not is_valid:
             return None
         return db_user
